@@ -38,7 +38,7 @@ repositories:
   ros2/rcl_interfaces:
     type: git
     url: https://github.com/ros2/rcl_interfaces.git
-    version: master
+    version: db27f0e8619460848d80c1442f7fec0c56ee63e5
   ros2/rclpy:
     type: git
     url: https://github.com/ros2/rclpy.git
@@ -94,4 +94,16 @@ repositories:
   ros2_dotnet/ros2_dotnet:
     type: git
     url: https://github.com/esteve/ros2_dotnet.git
+    version: master
+  ros2/geometry2:
+    type: git
+    url: https://github.com/ros2/geometry2.git
+    version: 43f2ec5c91b50a120d239e03eb12fff51076afd4
+  ros2/console_bridge_vendor:
+    type: git
+    url: https://github.com/ros2/console_bridge_vendor.git
+    version: 1.1.0
+  ros2/ros2_message_filters:
+    type: git
+    url: https://github.com/intel/ros2_message_filters.git
     version: master
