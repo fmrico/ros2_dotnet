@@ -324,5 +324,13 @@ namespace ROS2 {
       string rmw_identifier = Marshal.PtrToStringAnsi (ptr);
       return rmw_identifier;
     }
+
+    public static Tuple<int, uint> Now () {
+      int secs = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+      long ticks = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).Ticks % TimeSpan.TicksPerSecond;
+      uint nanosec = (uint)(ticks * 100);
+
+      return Tuple.Create(secs, nanosec);
+    }
   }
 }

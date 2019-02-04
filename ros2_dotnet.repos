@@ -97,8 +97,8 @@ repositories:
     version: master
   ros2/geometry2:
     type: git
-    url: https://github.com/ros2/geometry2.git
-    version: 43f2ec5c91b50a120d239e03eb12fff51076afd4
+    url: https://github.com/IntelligentRoboticsLabs/geometry2.git
+    version: rcldotnet
   ros2/console_bridge_vendor:
     type: git
     url: https://github.com/ros2/console_bridge_vendor.git
@@ -107,3 +107,7 @@ repositories:
     type: git
     url: https://github.com/intel/ros2_message_filters.git
     version: master
+  ros2/rclcpp:
+    type: git
+    url: https://github.com/ros2/rclcpp.git
+    version: 8f2052d65a8b05e19958db5484f5425c688098b8
