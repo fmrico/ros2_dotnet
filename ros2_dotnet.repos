@@ -93,8 +93,8 @@ repositories:
     version: master
   ros2_dotnet/ros2_dotnet:
     type: git
-    url: https://github.com/esteve/ros2_dotnet.git
-    version: master
+    url: https://github.com/fmrico/ros2_dotnet.git
+    version: geometry2_works
   ros2/geometry2:
     type: git
     url: https://github.com/IntelligentRoboticsLabs/geometry2.git
