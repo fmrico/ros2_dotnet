@@ -28,7 +28,6 @@ steps:
     md \dev\ament\src
     cd \dev\ament
     copy $(Build.Repository.LocalPath)\ament_dotnet_uwp.repos \dev\ament\ament_dotnet_uwp.repos
-    dir
     vcs import src < ament_dotnet_uwp.repos
     python src\ament\ament_tools\scripts\ament.py build --cmake-args -G "Visual Studio 15 2017 Win64" --
     call install\local_setup.bat
