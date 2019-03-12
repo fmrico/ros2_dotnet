@@ -31,7 +31,8 @@ steps:
     echo %SYSTEM_PULLREQUEST_SOURCEBRANCH%
     set BRANCH=$(Build.SourceBranchName)%SYSTEM_PULLREQUEST_SOURCEBRANCH%
     echo %BRANCH%
-    curl -sk https://raw.githubusercontent.com/esteve/ros2_dotnet/%BRANCH%/ament_dotnet_uwp.repos -o ament_dotnet_uwp.repos
+    echo https://raw.githubusercontent.com/fmrico/ros2_dotnet/%BRANCH%/ament_dotnet_uwp.repos
+    curl -sk https://raw.githubusercontent.com/fmrico/ros2_dotnet/%BRANCH%/ament_dotnet_uwp.repos -o ament_dotnet_uwp.repos
     vcs import src < ament_dotnet_uwp.repos
     python src\ament\ament_tools\scripts\ament.py build --cmake-args -G "Visual Studio 15 2017 Win64" --
     call install\local_setup.bat
