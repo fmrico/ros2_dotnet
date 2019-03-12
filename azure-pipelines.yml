@@ -27,9 +27,7 @@ steps:
     set PATH=%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin
     md \dev\ament\src
     cd \dev\ament
-    echo $(Build.SourceBranchName)
-    echo %SYSTEM_PULLREQUEST_SOURCEBRANCH%
-    set BRANCH=$(Build.SourceBranchName)%SYSTEM_PULLREQUEST_SOURCEBRANCH%
+    if defined SYSTEM_PULLREQUEST_SOURCEBRANCH (set BRANCH=%SYSTEM_PULLREQUEST_SOURCEBRANCH%) else (set BRANCH=$(Build.SourceBranchName))
     echo %BRANCH%
     echo https://raw.githubusercontent.com/fmrico/ros2_dotnet/%BRANCH%/ament_dotnet_uwp.repos
     curl -sk https://raw.githubusercontent.com/fmrico/ros2_dotnet/%BRANCH%/ament_dotnet_uwp.repos -o ament_dotnet_uwp.repos
