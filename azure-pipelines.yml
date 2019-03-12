@@ -29,7 +29,7 @@ steps:
     cd \dev\ament
     echo $(Build.SourceBranchName)
     echo %SYSTEM_PULLREQUEST_SOURCEBRANCH%
-    set BRANCH=$(Build.SourceBranchName):%SYSTEM_PULLREQUEST_SOURCEBRANCH%
+    set BRANCH=$(Build.SourceBranchName)%SYSTEM_PULLREQUEST_SOURCEBRANCH%
     echo %BRANCH%
     curl -sk https://raw.githubusercontent.com/esteve/ros2_dotnet/%BRANCH%/ament_dotnet_uwp.repos -o ament_dotnet_uwp.repos
     vcs import src < ament_dotnet_uwp.repos
