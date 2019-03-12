@@ -27,8 +27,8 @@ steps:
     set PATH=%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin
     md \dev\ament\src
     cd \dev\ament
-    echo https://raw.githubusercontent.com/fmrico/ros2_dotnet/$(Build.SourceBranchName)/ament_dotnet_uwp.repos
-    curl -sk https://raw.githubusercontent.com/fmrico/ros2_dotnet/$(Build.SourceBranchName)/ament_dotnet_uwp.repos -o ament_dotnet_uwp.repos
+    echo https://raw.githubusercontent.com/fmrico/ros2_dotnet/$(Build.TargetBranchName)/ament_dotnet_uwp.repos
+    curl -sk https://raw.githubusercontent.com/fmrico/ros2_dotnet/$(Build.TargetBranchName)/ament_dotnet_uwp.repos -o ament_dotnet_uwp.repos
     dir
     type ament_dotnet_uwp.repos
     vcs import src < ament_dotnet_uwp.repos
@@ -40,7 +40,7 @@ steps:
     set PATH=%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin
     md \dev\ros2\src
     cd \dev\ros2
-    curl -sk https://raw.githubusercontent.com/fmrico/ros2_dotnet/$(Build.SourceBranchName)/ros2_dotnet_uwp.repos -o ros2_dotnet_uwp.repos
+    curl -sk https://raw.githubusercontent.com/fmrico/ros2_dotnet/$(Build.TargetBranchName)/ros2_dotnet_uwp.repos -o ros2_dotnet_uwp.repos
     vcs import src < ros2_dotnet_uwp.repos
     cd \dev\ros2\src\ros2_dotnet
     vcs custom --git --args checkout %BUILD_SOURCEBRANCHNAME% || VER>NUL
@@ -64,7 +64,7 @@ steps:
     set PATH=%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin
     md \dev\ros2\src
     cd \dev\ros2
-    curl -sk https://raw.githubusercontent.com/fmrico/ros2_dotnet/$(Build.SourceBranchName)/ros2_dotnet.repos -o ros2_dotnet.repos
+    curl -sk https://raw.githubusercontent.com/fmrico/ros2_dotnet/$(Build.TargetBranchName)/ros2_dotnet.repos -o ros2_dotnet.repos
     vcs import src < ros2_dotnet.repos
     cd \dev\ros2\src\ros2_dotnet
     vcs custom --git --args checkout %BUILD_SOURCEBRANCHNAME% || VER>NUL
