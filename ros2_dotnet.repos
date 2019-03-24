@@ -1,4 +1,40 @@
 repositories:
+  ament/ament_cmake:
+    type: git
+    url: https://github.com/ament/ament_cmake.git
+    version: 0.5.1
+  ament/ament_index:
+    type: git
+    url: https://github.com/ament/ament_index.git
+    version: 0.5.1
+  ament/ament_lint:
+    type: git
+    url: https://github.com/ament/ament_lint.git
+    version: 0.5.2
+  ament/ament_package:
+    type: git
+    url: https://github.com/esteve/ament_package.git
+    version: windows-escape-values
+  ament/ament_tools:
+    type: git
+    url: https://github.com/esteve/ament_tools.git
+    version: win32-platform
+  ament/googletest:
+    type: git
+    url: https://github.com/ament/googletest.git
+    version: 4b6e624e78ba3d43c1602ffc80478ee7253e0b04
+  ament/osrf_pycommon:
+    type: git
+    url: https://github.com/osrf/osrf_pycommon.git
+    version: 0.1.5
+  ament/uncrustify:
+    type: git
+    url: https://github.com/ament/uncrustify.git
+    version: 0.66.1
+  ament_dotnet/ament_cmake_export_assemblies:
+    type: git
+    url: https://github.com/esteve/ament_cmake_export_assemblies.git
+    version: master
   eProsima/Fast-CDR:
     type: git
     url: https://github.com/eProsima/Fast-CDR.git
@@ -89,12 +125,12 @@ repositories:
     version: uwp-noenv
   ros2_dotnet/dotnet_cmake_module:
     type: git
-    url: https://github.com/esteve/dotnet_cmake_module.git
-    version: master
+    url: https://github.com/fmrico/dotnet_cmake_module.git
+    version: xunit_tests
   ros2_dotnet/ros2_dotnet:
     type: git
     url: https://github.com/fmrico/ros2_dotnet.git
-    version: geometry2_works
+    version: develop
   ros2/geometry2:
     type: git
     url: https://github.com/IntelligentRoboticsLabs/geometry2.git
