@@ -24,7 +24,7 @@ What's missing?
 ---------------
 
 Lots of things!
-- Nested types
+- Collection types
 - Component nodes
 - Clients and services
 - Tests
