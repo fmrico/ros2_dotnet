@@ -56,7 +56,8 @@ void native_write_field_@(field.name)(void *, @(primitive_msg_type_to_c(field.ty
 @[        else]@
 @(msg_prefix)_EXPORT
 void * @(msg_prefix)_CDECL native_get_field_@(field.name)_HANDLE(void *);
-@[  end if]@
+@[        end if]@
+@[    end if]@
 @[end for]@
 
 #endif // @(header_guard)
