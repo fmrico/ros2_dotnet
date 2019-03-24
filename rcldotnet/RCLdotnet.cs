@@ -476,5 +476,13 @@ namespace ROS2 {
       string rcl_error_string = Marshal.PtrToStringAnsi (ptr);
       return rcl_error_string;
     }
+
+    public static Tuple<int, uint> Now () {
+      int secs = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+      long ticks = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).Ticks % TimeSpan.TicksPerSecond;
+      uint nanosec = (uint)(ticks * 100);
+
+      return Tuple.Create(secs, nanosec);
+    }
   }
 }
