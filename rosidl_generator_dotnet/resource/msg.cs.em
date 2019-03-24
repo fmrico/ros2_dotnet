@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 using ROS2.Interfaces;
 using ROS2.Utils;
@@ -14,19 +15,21 @@ public class @(type_name) : IMessage {
 
     public @(type_name)()
     {
+
 @[for field in spec.fields]@
 @[    if field.type.is_array]@
-// TODO(fmrico): Arrays are not supported
+        @(get_field_name(type_name, field.name)) = new List<@(get_dotnet_type(field.type))>();
 @[    else]@
-@[        if field.type.is_primitive_type()]@
-@[            if field.type.type == 'string']@
+@[        if field.type.type == 'string']@
         @(get_field_name(type_name, field.name)) = "";
-@[            end if]@
 @[        else]@
+@[            if not field.type.is_primitive_type()]@
         @(get_field_name(type_name, field.name)) = new @(get_dotnet_type(field.type)) ();
+@[            end if]@
 @[        end if]@
 @[    end if]@
 @[end for]@
+
     }
 
     static @(type_name)()
@@ -51,7 +54,26 @@ public class @(type_name) : IMessage {
 
 @[for field in spec.fields]@
 @[    if field.type.is_array]@
-// TODO(esteve): Arrays are not supported
+
+        IntPtr native_get_field_@(field.name)_message_ptr = dllLoadUtils.GetProcAddress(nativelibrary, "native_get_field_@(field.name)_message");
+        IntPtr native_init_field_@(field.name)_message_ptr = dllLoadUtils.GetProcAddress(nativelibrary, "native_init_field_@(field.name)_message");
+        IntPtr native_getsize_array_field_@(field.name)_message_ptr = dllLoadUtils.GetProcAddress(nativelibrary, "native_getsize_array_field_@(field.name)_message");
+@[        if field.type.is_primitive_type()]@
+        IntPtr native_write_field_@(field.name)_ptr = dllLoadUtils.GetProcAddress(nativelibrary, "native_write_field_@(field.name)");
+        IntPtr native_read_field_@(field.name)_ptr = dllLoadUtils.GetProcAddress(nativelibrary, "native_read_field_@(field.name)");
+@[        end if]@
+        @(type_name).native_get_field_@(field.name)_message = (NativeGetField@(get_field_name(type_name, field.name))MessageType)Marshal.GetDelegateForFunctionPointer(
+            native_get_field_@(field.name)_message_ptr, typeof(NativeGetField@(get_field_name(type_name, field.name))MessageType));
+        @(type_name).native_init_field_@(field.name)_message = (NativeInitField@(get_field_name(type_name, field.name))MessageType)Marshal.GetDelegateForFunctionPointer(
+            native_init_field_@(field.name)_message_ptr, typeof(NativeInitField@(get_field_name(type_name, field.name))MessageType));
+        @(type_name).native_getsize_array_field_@(field.name)_message = (NativeGetSizeArrayField@(get_field_name(type_name, field.name))MessageType)Marshal.GetDelegateForFunctionPointer(
+            native_getsize_array_field_@(field.name)_message_ptr, typeof(NativeGetSizeArrayField@(get_field_name(type_name, field.name))MessageType));
+@[        if field.type.is_primitive_type()]@
+        @(type_name).native_write_field_@(field.name) = (NativeWriteField@(get_field_name(type_name, field.name))Type)Marshal.GetDelegateForFunctionPointer(
+            native_write_field_@(field.name)_ptr, typeof(NativeWriteField@(get_field_name(type_name, field.name))Type));
+        @(type_name).native_read_field_@(field.name) = (NativeReadField@(get_field_name(type_name, field.name))Type)Marshal.GetDelegateForFunctionPointer(
+            native_read_field_@(field.name)_ptr, typeof(NativeReadField@(get_field_name(type_name, field.name))Type));
+@[        end if]@
 @[    else]@
 @[        if field.type.is_primitive_type()]@
         IntPtr native_read_field_@(field.name)_ptr =
@@ -94,7 +116,38 @@ public class @(type_name) : IMessage {
 
 @[for field in spec.fields]@
 @[    if field.type.is_array]@
-// TODO(esteve): Arrays are not supported
+
+    private static NativeGetField@(get_field_name(type_name, field.name))MessageType native_get_field_@(field.name)_message = null;
+    private static NativeInitField@(get_field_name(type_name, field.name))MessageType native_init_field_@(field.name)_message = null;
+    private static NativeGetSizeArrayField@(get_field_name(type_name, field.name))MessageType native_getsize_array_field_@(field.name)_message = null;
+
+@[        if field.type.is_primitive_type()]@
+    private static NativeWriteField@(get_field_name(type_name, field.name))Type native_write_field_@(field.name) = null;
+    private static NativeReadField@(get_field_name(type_name, field.name))Type native_read_field_@(field.name) = null;
+@[        end if]@
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate IntPtr NativeGetField@(get_field_name(type_name, field.name))MessageType(
+        IntPtr messageHandle, int index);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate IntPtr NativeInitField@(get_field_name(type_name, field.name))MessageType(
+        IntPtr messageHandle, int size);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate int NativeGetSizeArrayField@(get_field_name(type_name, field.name))MessageType(IntPtr messageHandle);
+@[            if field.type.type == 'string']@
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void NativeWriteField@(get_field_name(type_name, field.name))Type(
+        IntPtr messageHandle, [MarshalAs (UnmanagedType.LPStr)] string value);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate IntPtr NativeReadField@(get_field_name(type_name, field.name))Type(IntPtr messageHandle);
+@[            else]@
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate @(get_dotnet_type(field.type)) NativeReadField@(get_field_name(type_name, field.name))Type(
+        IntPtr messageHandle);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void NativeWriteField@(get_field_name(type_name, field.name))Type(
+        IntPtr messageHandle, @(get_dotnet_type(field.type)) value);
+@[            end if]@
 @[    else]@
 @[        if field.type.is_primitive_type()]@
 @[            if field.type.type == 'string']@
@@ -137,15 +190,33 @@ public class @(type_name) : IMessage {
     public void _READ_HANDLE(IntPtr messageHandle) {
 @[for field in spec.fields]@
 @[    if field.type.is_array]@
+      {
+          int size = native_getsize_array_field_@(field.name)_message(messageHandle);
+          @(get_field_name(type_name, field.name)).Clear();
+          for (int i=0; i<size; i++)
+          {
+          @[        if field.type.is_primitive_type()]@
+          @[            if field.type.type == 'string']@
+              IntPtr pStr = native_read_field_@(field.name)(native_get_field_@(field.name)_message(messageHandle, i));
+              @(get_field_name(type_name, field.name)).Add(Marshal.PtrToStringAnsi(pStr));
+          @[            else]@
+              @(get_field_name(type_name, field.name)).Add(native_read_field_@(field.name)(native_get_field_@(field.name)_message(messageHandle, i)));
+          @[            end if]@
+          @[        else]@
+              @(get_field_name(type_name, field.name)).Add(new @(get_dotnet_type(field.type))());
+              @(get_field_name(type_name, field.name))[@(get_field_name(type_name, field.name)).Count-1]._READ_HANDLE(native_get_field_@(field.name)_message(messageHandle, i));
+          @[        end if]@
+        }
+      }
 @[    else]@
 @[        if field.type.is_primitive_type()]@
 @[            if field.type.type == 'string']@
-        {
-            IntPtr pStr = native_read_field_@(field.name)(messageHandle);
-            @(get_field_name(type_name, field.name)) = Marshal.PtrToStringAnsi(pStr);
-        }
+      {
+          IntPtr pStr = native_read_field_@(field.name)(messageHandle);
+          @(get_field_name(type_name, field.name)) = Marshal.PtrToStringAnsi(pStr);
+      }
 @[            else]@
-        @(get_field_name(type_name, field.name)) = native_read_field_@(field.name)(messageHandle);
+      @(get_field_name(type_name, field.name)) = native_read_field_@(field.name)(messageHandle);
 @[            end if]@
 @[        else]@
         @(get_field_name(type_name, field.name))._READ_HANDLE(native_get_field_@(field.name)_HANDLE(messageHandle));
@@ -155,8 +226,21 @@ public class @(type_name) : IMessage {
     }
 
     public void _WRITE_HANDLE(IntPtr messageHandle) {
+
 @[for field in spec.fields]@
 @[    if field.type.is_array]@
+        {
+            native_init_field_@(field.name)_message(messageHandle, @(get_field_name(type_name, field.name)).Count);
+            int count = 0;
+            foreach(@(get_dotnet_type(field.type)) value in @(get_field_name(type_name, field.name)))
+            {
+@[        if field.type.is_primitive_type()]@
+                native_write_field_@(field.name)(native_get_field_@(field.name)_message(messageHandle, count++), value);
+@[        else]@
+                value._WRITE_HANDLE(native_get_field_@(field.name)_message(messageHandle, count++));
+@[        end if]@
+            }
+        }
 @[    else]@
 @[        if field.type.is_primitive_type()]@
         native_write_field_@(field.name)(messageHandle, @(get_field_name(type_name, field.name)));
@@ -178,7 +262,7 @@ public class @(type_name) : IMessage {
 
 @[for field in spec.fields]@
 @[    if field.type.is_array]@
-// TODO(esteve): Arrays are not supported
+    public List<@(get_dotnet_type(field.type))> @(get_field_name(type_name, field.name));
 @[    else]@
     public @(get_dotnet_type(field.type)) @(get_field_name(type_name, field.name)) { get; set; }
 @[    end if]@
