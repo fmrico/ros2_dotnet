@@ -40,8 +40,16 @@ namespace ROS2 {
     internal static NativeRCLOkType native_rcl_ok = null;
 
     [UnmanagedFunctionPointer (CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    internal delegate int NativeRMWValidateNodeNameType ([MarshalAs (UnmanagedType.LPStr)] string nodeName,
+    [param: MarshalAs(UnmanagedType.I4), Out()] out RMWNodeNameRet validation_result,
+    [param: MarshalAs(UnmanagedType.I4), Out()] out int invalid_index);
+
+    internal static NativeRMWValidateNodeNameType native_rmw_validate_node_name = null;
+
+    [UnmanagedFunctionPointer (CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     internal delegate int NativeRCLCreateNodeHandleType (
-      ref IntPtr nodeHandle, [MarshalAs (UnmanagedType.LPStr)] string nodeName, [MarshalAs (UnmanagedType.LPStr)] string nodeNamespace);
+      ref IntPtr nodeHandle, [MarshalAs (UnmanagedType.LPStr)] string nodeName,
+      [MarshalAs (UnmanagedType.LPStr)] string nodeNamespace);
 
     internal static NativeRCLCreateNodeHandleType native_rcl_create_node_handle = null;
 
@@ -49,6 +57,23 @@ namespace ROS2 {
     internal delegate IntPtr NativeRCLGetRMWIdentifierType ();
 
     internal static NativeRCLGetRMWIdentifierType native_rcl_get_rmw_identifier = null;
+
+    [UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+    internal delegate IntPtr NativeRMWGetErrorStringType ();
+    internal static NativeRMWGetErrorStringType native_rmw_get_error_string = null;
+
+    [UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+    internal delegate IntPtr NativeRMWResetErrorType ();
+    internal static NativeRMWResetErrorType native_rmw_reset_error = null;
+
+    [UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+    internal delegate IntPtr NativeRCLGetErrorStringType ();
+    internal static NativeRCLGetErrorStringType native_rcl_get_error_string = null;
+
+    [UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+    internal delegate IntPtr NativeRCLResetErrorType ();
+    internal static NativeRCLResetErrorType native_rcl_reset_error = null;
+
 
     [UnmanagedFunctionPointer (CallingConvention.Cdecl)]
     internal delegate IntPtr NativeRCLGetZeroInitializedWaitSetType ();
@@ -115,11 +140,41 @@ namespace ROS2 {
         (NativeRCLGetRMWIdentifierType) Marshal.GetDelegateForFunctionPointer (
           native_rcl_get_rmw_identifier_ptr, typeof (NativeRCLGetRMWIdentifierType));
 
+      IntPtr native_rmw_get_error_string_ptr =
+        dllLoadUtils.GetProcAddress (pDll, "native_rmw_get_error_string");
+      RCLdotnetDelegates.native_rmw_get_error_string =
+        (NativeRMWGetErrorStringType) Marshal.GetDelegateForFunctionPointer (
+          native_rmw_get_error_string_ptr, typeof (NativeRMWGetErrorStringType));
+
+      IntPtr native_rmw_reset_error_ptr =
+        dllLoadUtils.GetProcAddress (pDll, "native_rmw_reset_error");
+      RCLdotnetDelegates.native_rmw_reset_error =
+        (NativeRMWResetErrorType) Marshal.GetDelegateForFunctionPointer (
+        native_rmw_reset_error_ptr, typeof (NativeRMWResetErrorType));
+
+      IntPtr native_rcl_get_error_string_ptr =
+        dllLoadUtils.GetProcAddress (pDll, "native_rcl_get_error_string");
+      RCLdotnetDelegates.native_rcl_get_error_string =
+        (NativeRCLGetErrorStringType) Marshal.GetDelegateForFunctionPointer (
+          native_rcl_get_error_string_ptr, typeof (NativeRCLGetErrorStringType));
+
+      IntPtr native_rcl_reset_error_ptr =
+        dllLoadUtils.GetProcAddress (pDll, "native_rcl_reset_error");
+      RCLdotnetDelegates.native_rcl_reset_error =
+        (NativeRCLResetErrorType) Marshal.GetDelegateForFunctionPointer (
+        native_rcl_reset_error_ptr, typeof (NativeRCLResetErrorType));
+
       IntPtr native_rcl_ok_ptr =
         dllLoadUtils.GetProcAddress (pDll, "native_rcl_ok");
       RCLdotnetDelegates.native_rcl_ok =
         (NativeRCLOkType) Marshal.GetDelegateForFunctionPointer (
           native_rcl_ok_ptr, typeof (NativeRCLOkType));
+
+      IntPtr native_rmw_validate_node_name_ptr =
+        dllLoadUtils.GetProcAddress (pDll, "native_rmw_validate_node_name");
+      RCLdotnetDelegates.native_rmw_validate_node_name =
+        (NativeRMWValidateNodeNameType) Marshal.GetDelegateForFunctionPointer (
+          native_rmw_validate_node_name_ptr, typeof (NativeRMWValidateNodeNameType));
 
       IntPtr native_rcl_create_node_handle_ptr =
         dllLoadUtils.GetProcAddress (pDll, "native_rcl_create_node_handle");
@@ -198,7 +253,92 @@ namespace ROS2 {
 
     public static Node CreateNode (string nodeName, string nodeNamespace) {
       IntPtr nodeHandle = IntPtr.Zero;
-      int ret = RCLdotnetDelegates.native_rcl_create_node_handle (ref nodeHandle, nodeName, nodeNamespace);
+
+      RMWNodeNameRet validation_result;
+      int invalid_index;
+
+      RMWRet validNodeNameRet =
+        (RMWRet)RCLdotnetDelegates.native_rmw_validate_node_name (nodeName, out validation_result, out invalid_index);
+
+      if (validNodeNameRet != RMWRet.Ok)
+      {
+        string errorString = RMWGetErrorString ();
+        RCLdotnetDelegates.native_rmw_reset_error ();
+
+        switch (validNodeNameRet) {
+          case RMWRet.Error:
+          {
+            throw new RMWErrorException(errorString);
+          }
+          case RMWRet.TimeOut:
+          {
+            throw new RMWTimeOutException(errorString);
+          }
+        }
+      }
+
+      if (validation_result != RMWNodeNameRet.NodeNameValid) {
+        string errorString = RMWGetErrorString ();
+        RCLdotnetDelegates.native_rmw_reset_error ();
+
+        switch (validation_result) {
+          case RMWNodeNameRet.NodeNameInvalidIsEmptyString:
+            {
+              throw new NodeNameInvalidIsEmptyStringException(errorString);
+            }
+          case RMWNodeNameRet.NodeNameInvalidContainsUnallowedCharacters:
+            {
+              throw new NodeNameInvalidContainsUnallowedCharactersException(errorString);
+            }
+          case RMWNodeNameRet.NodeNameInvalidStartsWithNumber:
+            {
+              throw new NodeNameInvalidStartsWithNumberException(errorString);
+            }
+          case RMWNodeNameRet.NodeNameInvalidTooLong:
+            {
+              throw new NodeNameInvalidTooLongException(errorString);
+            }
+          default:
+            {
+              throw new InvalidOperationException(errorString);
+            }
+        }
+      }
+
+      RCLRet ret = (RCLRet)RCLdotnetDelegates.native_rcl_create_node_handle (ref nodeHandle, nodeName, nodeNamespace);
+
+      if (ret != RCLRet.Ok) {
+        string errorString = RCLGetErrorString ();
+        RCLdotnetDelegates.native_rcl_reset_error ();
+
+        switch (ret) {
+          case RCLRet.AlreadyInit:
+            {
+              throw new AlreadyInitException(errorString);
+            }
+          case RCLRet.InvalidArgument:
+            {
+              throw new InvalidArgumentException(errorString);
+            }
+          case RCLRet.BadAlloc:
+            {
+              throw new BadAllocException(errorString);
+            }
+          case RCLRet.NodeInvalidName:
+            {
+              throw new NodeInvalidNameException(errorString);
+            }
+          case RCLRet.NodeInvalidNamespace:
+            {
+              throw new NodeInvalidNamespaceException(errorString);
+            }
+          default:
+            {
+              throw new InvalidOperationException(errorString);
+            }
+          }
+      }
+
       Node node = new Node (nodeHandle);
       return node;
     }
@@ -323,6 +463,18 @@ namespace ROS2 {
       IntPtr ptr = RCLdotnetDelegates.native_rcl_get_rmw_identifier ();
       string rmw_identifier = Marshal.PtrToStringAnsi (ptr);
       return rmw_identifier;
+    }
+
+    public static string RMWGetErrorString () {
+      IntPtr ptr = RCLdotnetDelegates.native_rmw_get_error_string ();
+      string rmw_error_string = Marshal.PtrToStringAnsi (ptr);
+      return rmw_error_string;
+    }
+
+    public static string RCLGetErrorString () {
+      IntPtr ptr = RCLdotnetDelegates.native_rcl_get_error_string ();
+      string rcl_error_string = Marshal.PtrToStringAnsi (ptr);
+      return rcl_error_string;
     }
   }
 }

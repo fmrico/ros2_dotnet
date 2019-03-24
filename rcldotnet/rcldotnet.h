@@ -24,7 +24,23 @@ RCLDOTNET_EXPORT
 const char * RCLDOTNET_CDECL native_rcl_get_rmw_identifier();
 
 RCLDOTNET_EXPORT
+const char * RCLDOTNET_CDECL native_rmw_get_error_string();
+
+RCLDOTNET_EXPORT
+const char * RCLDOTNET_CDECL native_rcl_get_error_string();
+
+RCLDOTNET_EXPORT
+void RCLDOTNET_CDECL native_rcl_reset_error();
+
+RCLDOTNET_EXPORT
+void RCLDOTNET_CDECL native_rmw_reset_error();
+
+RCLDOTNET_EXPORT
 bool RCLDOTNET_CDECL native_rcl_ok();
+
+RCLDOTNET_EXPORT
+int32_t RCLDOTNET_CDECL native_rmw_validate_node_name(const char *, int *, int *);
+
 
 RCLDOTNET_EXPORT
 int32_t RCLDOTNET_CDECL native_rcl_create_node_handle(void **, const char *, const char *);
